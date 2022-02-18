@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import notepy
+
+if __name__ == '__main__':
+    notepy.main()
