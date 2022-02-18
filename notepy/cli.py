@@ -1,10 +1,19 @@
 import argparse
 
-notepy = argparse.ArgumentParser(
+from note import notepy
+
+# initialize the parser
+notepy_parser = argparse.ArgumentParser(
     prog='clipper', description='A simple CLI for taking notes'
 )
+sub_parser = notepy_parser.add_subparsers(dest='command')
 
-sub_parser = notepy.add_subparsers(dest='command')
+# parser for 'get' command
+get_parser = sub_parser.add_parser('get', help='get a note')
+get_parser.add_argument('key', help='note key')
+get_parser.add_argument(
+    '-c', '--clipboard', action='store_true', help='copy to clipboard'
+)
 
 # parser for 'add' command
 add_parser = sub_parser.add_parser('add', help='add a new note')
@@ -33,17 +42,22 @@ edit_parser.add_argument(
 # parser for 'list' command
 list_parser = sub_parser.add_parser('list', help='show all notes')
 list_parser.add_argument(
-    '-m',
-    '--many',
-    metavar='number',
+    'many',
     action='store',
     type=int,
     help='set how many notes to show',
+    nargs='?',
     default=None,
 )
 
-args = notepy.parse_args()
+# parser for 'clear' command
+clear_parser = sub_parser.add_parser('clear', help='clear all notes')
 
-notepy.print_help()
+kwargs = vars(notepy_parser.parse_args())
 
-print(args)
+if not kwargs['command']:
+    notepy_parser.print_help()
+    quit()
+
+
+notepy(**kwargs)
