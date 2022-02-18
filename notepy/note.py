@@ -111,7 +111,7 @@ class Note:
             json.dump(self.db, f, indent=2)
 
 
-def notepy(
+def run_notepy(
     command: str,
     key: str = None,
     value: list = None,
