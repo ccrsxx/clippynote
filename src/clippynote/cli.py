@@ -12,6 +12,9 @@ def parse_args():
     )
     sub_parser = notepy_parser.add_subparsers(dest='command')
 
+    # init-parser for 'init' command
+    sub_parser.add_parser('init', help='initialize a new database')
+
     # sub-parser for 'get' command
     get_parser = sub_parser.add_parser('get', help='get a note')
     get_parser.add_argument('key', help='note key')
@@ -50,6 +53,15 @@ def parse_args():
         default=[],
     )
     edit_parser.add_argument(
+        '-k',
+        '--key',
+        metavar='key',
+        help='edit key (optional)',
+        action='store',
+        type=str,
+        dest='new_key',
+    )
+    edit_parser.add_argument(
         '-c', '--clipboard', action='store_true', help='get from clipboard'
     )
 
@@ -86,6 +98,9 @@ def parse_args():
 
     # subparser for 'clear' command
     sub_parser.add_parser('clear', help='clear all notes')
+
+    # subparser for 'loc' command
+    sub_parser.add_parser('loc', help='get the database location')
 
     return [notepy_parser, vars(notepy_parser.parse_args())]
 
