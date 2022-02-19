@@ -31,14 +31,15 @@ class Note:
 
     def add_note(self, key, value, clipboard):
         if key in self.db:
-            print(f'key {key} with a value of "{self.db[key]}" already exists!')
+            print(f'key {key} with a value of "{self.db[key]}" is already exists!\n')
             self.edit_note(key, value, clipboard)
         else:
             if clipboard:
                 self.db[key] = pyperclip.paste()
-                print(f'{key} added!')
+                print(f'Adding value from clipboard to {key}...')
             else:
                 self.db[key] = value
+            print(f'{key} added!')
             self.save_db()
 
     def remove_note(self, key):
@@ -58,7 +59,7 @@ class Note:
                 valid = ['Y', 'y', 'N', 'n']
 
                 while ask not in valid:
-                    ask = input('Do you want to overwrite? [Y/N]\n> ')
+                    ask = input(f'Do you want to overwrite {key}? [Y/N]\n> ')
                     if ask not in valid:
                         print('\nInvalid input!\n')
             except KeyboardInterrupt:
@@ -74,15 +75,30 @@ class Note:
             else:
                 print(f'\n{key} not updated!')
 
-    def list_notes(self, many):
+    def list_notes(self, search, many, sort, force_strict):
+        keys = []
+
+        for key in self.db:
+            if search:
+                if force_strict and key.startswith(search):
+                    keys.append(key)
+                elif not force_strict and search in key:
+                    keys.append(key)
+            else:
+                keys.append(key)
+
+        if not keys:
+            print('No notes found!')
+            exit()
+
+        if sort:
+            keys.sort()
+
         if many:
-            for n, (key, value) in enumerate(self.db.items(), 1):
-                print(f'{n}. {key} = {value}')
-                if n == many:
-                    break
-        else:
-            for key, value in self.db.items():
-                print(f'- {key}\t: {value}')
+            keys = keys[:many]
+
+        for key in keys:
+            print(f'🔑 {key}\t: {self.db[key]}')
 
     def clear_notes(self):
         try:
@@ -116,7 +132,10 @@ def run_notepy(
     key: str = None,
     value: list = None,
     clipboard: bool = False,
+    search: str = None,
     many: int = None,
+    sort: bool = False,
+    force_strict: bool = False,
 ):
 
     note = Note()
@@ -124,8 +143,12 @@ def run_notepy(
     if value:
         value = ' '.join(value)
 
-    if command in ['edit', 'remove'] and not value and not clipboard:
-        return print('No value or clipboard input!')
+    if command in ['edit', 'remove'] and (not key or not value) and not clipboard:
+        print('No key / value or clipboard input!')
+        exit()
+    elif command == 'list' and not search and force_strict:
+        print('You need to add a filter to use strict filter!')
+        exit()
 
     match command:
         case 'get':
@@ -137,6 +160,6 @@ def run_notepy(
         case 'edit':
             note.edit_note(key, value, clipboard)
         case 'list':
-            note.list_notes(many)
+            note.list_notes(search, many, sort, force_strict)
         case 'clear':
             note.clear_notes()

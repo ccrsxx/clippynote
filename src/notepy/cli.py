@@ -1,23 +1,25 @@
 import argparse
 
-from notepy import run_notepy
+from . import run_notepy
 
 
 def parse_args():
-    # initialize the parser
+    # initialize the main parser
     notepy_parser = argparse.ArgumentParser(
-        prog='clipper', description='A simple CLI for taking notes'
+        prog='notepy',
+        description='A simple CLI for taking notes',
+        allow_abbrev=False,
     )
     sub_parser = notepy_parser.add_subparsers(dest='command')
 
-    # parser for 'get' command
+    # sub-parser for 'get' command
     get_parser = sub_parser.add_parser('get', help='get a note')
     get_parser.add_argument('key', help='note key')
     get_parser.add_argument(
         '-c', '--clipboard', action='store_true', help='copy to clipboard'
     )
 
-    # parser for 'add' command
+    # subparser for 'add' command
     add_parser = sub_parser.add_parser('add', help='add a new note')
     add_parser.add_argument('key', action='store', type=str, help='note key')
     add_parser.add_argument(
@@ -32,7 +34,7 @@ def parse_args():
         '-c', '--clipboard', action='store_true', help='get from clipboard'
     )
 
-    # parser for 'remove' command
+    # subparser for 'remove' command
     remove_parser = sub_parser.add_parser('remove', help='remove a note')
     remove_parser.add_argument('key', action='store', type=str, help='note key')
 
@@ -51,24 +53,44 @@ def parse_args():
         '-c', '--clipboard', action='store_true', help='get from clipboard'
     )
 
-    # parser for 'list' command
+    # subparser for 'list' command
     list_parser = sub_parser.add_parser('list', help='show all notes')
     list_parser.add_argument(
-        'many',
+        'search',
         action='store',
-        type=int,
-        help='set how many notes to show',
+        type=str,
+        help='search notes by key',
         nargs='?',
         default=None,
     )
+    list_parser.add_argument(
+        '-m',
+        '--many',
+        metavar='num',
+        action='store',
+        type=int,
+        help='limit how many notes',
+    )
+    list_parser.add_argument(
+        '-s',
+        '--sort',
+        action='store_true',
+        help='sort the notes by key',
+    )
+    list_parser.add_argument(
+        '-f',
+        '--force-strict',
+        action='store_true',
+        help='only show notes that starts with the filter',
+    )
 
-    # parser for 'clear' command
+    # subparser for 'clear' command
     sub_parser.add_parser('clear', help='clear all notes')
 
     return [notepy_parser, vars(notepy_parser.parse_args())]
 
 
-def main():
+def run_cli():
     [notepy_parser, kwargs] = parse_args()
 
     if not kwargs['command']:
