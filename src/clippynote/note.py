@@ -18,8 +18,6 @@ class Note:
         with open(self.db_location, 'r') as f:
             self.db = json.load(f)
 
-        self.get_db_location()
-
     def initialize_db(self):
         if os.path.exists(self.db_location):
             print('⚠️ Database already exists!')
