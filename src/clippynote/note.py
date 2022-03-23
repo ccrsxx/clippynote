@@ -4,10 +4,10 @@ import pyperclip
 
 
 class Note:
-    def __init__(self, init=False):
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-        self.db_location = 'db.json'
+    def __init__(self, init):
+        self.db_location = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), 'db.json'
+        )
 
         if init:
             return self.initialize_db()
@@ -15,8 +15,11 @@ class Note:
             print('❌ You need to initialize the database first with "note init"!')
             exit()
 
+        self.db = self.load_db()
+
+    def load_db(self):
         with open(self.db_location, 'r') as f:
-            self.db = json.load(f)
+            return json.load(f)
 
     def initialize_db(self):
         if os.path.exists(self.db_location):
@@ -37,7 +40,7 @@ class Note:
                 pyperclip.copy(self.db[key])
                 print(f'📋 {key} copied to clipboard!')
             else:
-                print(f'{key} = {self.db[key]}')
+                print(f'🔑 {key} : {self.db[key]}')
 
     def add_note(self, key, new_key, value, clipboard):
         if key in self.db:
@@ -95,7 +98,7 @@ class Note:
             else:
                 print(f'❌ {key} not updated!')
 
-    def list_notes(self, search, many, sort, force_strict):
+    def list_notes(self, search, many, sort, force_strict, full_key):
         keys = []
 
         for key in self.db:
@@ -117,8 +120,22 @@ class Note:
         if many:
             keys = keys[:many]
 
+        spacing = lambda x, y: y - len(x)
+        max_len = max([len(x) for x in keys])
+
+        if max_len > 20:
+            max_len = 20
+
         for key in keys:
-            print(f'🔑 {key}\t: {self.db[key]}')
+            new_key, over_space = '', False
+            key_space = spacing(key, max_len)
+            if key_space < 0:
+                key_space = ''
+                new_key = f'{key[:17]}...' if not full_key else key
+                over_space = True
+            print(
+                f'🔑 {key if not over_space else new_key}{"":{key_space}} : {self.db[key]}'
+            )
 
     def clear_notes(self):
         try:
@@ -157,6 +174,7 @@ def run_notepy(
     many: int = None,
     sort: bool = False,
     force_strict: bool = False,
+    full_key: bool = False,
 ):
 
     note = Note(init=True if command == 'init' else False)
@@ -179,16 +197,15 @@ def run_notepy(
     if value:
         value = ' '.join(value)
 
-    match command:
-        case 'get':
-            note.get_note(key, clipboard)
-        case 'add':
-            note.add_note(key, new_key, value, clipboard)
-        case 'remove':
-            note.remove_note(key)
-        case 'edit':
-            note.edit_note(key, new_key, value, clipboard)
-        case 'list':
-            note.list_notes(search, many, sort, force_strict)
-        case 'clear':
-            note.clear_notes()
+    if command == 'get':
+        note.get_note(key, clipboard)
+    elif command == 'add':
+        note.add_note(key, new_key, value, clipboard)
+    elif command == 'remove':
+        note.remove_note(key)
+    elif command == 'edit':
+        note.edit_note(key, new_key, value, clipboard)
+    elif command == 'list':
+        note.list_notes(search, many, sort, force_strict, full_key)
+    elif command == 'clear':
+        note.clear_notes()

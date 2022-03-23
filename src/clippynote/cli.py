@@ -95,18 +95,28 @@ def parse_args():
         action='store_true',
         help='only show notes that starts with the filter',
     )
+    list_parser.add_argument(
+        '-fk',
+        '--full-key',
+        action='store_true',
+        help='show max length of key',
+    )
 
     # subparser for 'clear' command
     sub_parser.add_parser('clear', help='clear all notes')
 
+    # subparser for 'import' command
+    # import_parser = sub_parser.add_parser('import', help='import notes from file')
+    # import_parser.add_argument('path', help='path to the file')
+
     # subparser for 'loc' command
     sub_parser.add_parser('loc', help='get the database location')
 
-    return [notepy_parser, vars(notepy_parser.parse_args())]
+    return notepy_parser, vars(notepy_parser.parse_args())
 
 
 def run_cli():
-    [notepy_parser, kwargs] = parse_args()
+    notepy_parser, kwargs = parse_args()
 
     if not kwargs['command']:
         notepy_parser.print_help()
