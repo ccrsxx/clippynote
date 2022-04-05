@@ -105,10 +105,6 @@ def parse_args():
     # subparser for 'clear' command
     sub_parser.add_parser('clear', help='clear all notes')
 
-    # subparser for 'import' command
-    # import_parser = sub_parser.add_parser('import', help='import notes from file')
-    # import_parser.add_argument('path', help='path to the file')
-
     # subparser for 'loc' command
     sub_parser.add_parser('loc', help='get the database location')
 

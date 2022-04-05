@@ -1,3 +1,12 @@
+[tool.black]
+line-length = 88
+skip-string-normalization = true
+
+# We use preview style for formatting Black itself. If you
+# want stable formatting across releases, you should keep
+# this off.
+preview = false
+
 [build-system]
 requires = [
     "setuptools>=42",
