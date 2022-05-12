@@ -164,7 +164,7 @@ class Note:
             json.dump(self.db, f, indent=2)
 
 
-def run_notepy(
+def run_note(
     command: str,
     key: str = None,
     value: list = None,
@@ -195,7 +195,7 @@ def run_notepy(
         exit()
 
     if value:
-        value = ' '.join(value)
+        value = ' '.join(value)  # type: ignore
 
     if command == 'get':
         note.get_note(key, clipboard)

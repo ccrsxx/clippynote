@@ -118,4 +118,4 @@ def run_cli():
         notepy_parser.print_help()
         quit()
 
-    note.run_notepy(**kwargs)
+    note.run_note(**kwargs)
