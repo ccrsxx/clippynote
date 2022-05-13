@@ -4,22 +4,26 @@ import pyperclip
 
 
 class Note:
-    def __init__(self, init):
+    def __init__(self, init: bool, imported: bool):
         self.db_location = os.path.join(
             os.path.dirname(os.path.realpath(__file__)), 'db.json'
         )
 
         if init:
             return self.initialize_db()
-        elif not os.path.exists(self.db_location):
+
+        if not os.path.exists(self.db_location) and not imported:
             print('❌ You need to initialize the database first with "note init"!')
             exit()
 
-        self.db = self.load_db()
+        self.db = self.load_db(imported)
 
-    def load_db(self):
-        with open(self.db_location, 'r') as f:
-            return json.load(f)
+    def load_db(self, imported: bool):
+        if not imported:
+            with open(self.db_location, 'r') as f:
+                return json.load(f)
+        else:
+            return {}
 
     def initialize_db(self):
         if os.path.exists(self.db_location):
@@ -137,6 +141,48 @@ class Note:
                 f'🔑 {key if not over_space else new_key}{"":{key_space}} : {self.db[key]}'
             )
 
+    def import_db(self, path: str):
+        if not os.path.isfile(path):
+            return print(f'❌ {path} is not a file!')
+
+        if not os.path.basename(path).endswith('.json'):
+            return print(f'❌ {path} is not a json file!')
+
+        with open(path, 'r') as f:
+            data: dict = json.load(f)
+
+        if not data:
+            return print(f'❌ {path} is empty!')
+
+        filtered_data = {
+            key: value
+            for key, value in data.items()
+            if all(isinstance(item, str) for item in [key, value])
+        }
+
+        if not filtered_data:
+            return print(f'❌ {path} is not a valid json file!')
+
+        self.db = filtered_data
+
+        self.save_db()
+
+        print(f'✅ {path} imported!')
+
+    def export_db(self, path: str):
+        if path and not os.path.isdir(path):
+            return print(f'❌ {path} is not a directory!')
+
+        with open(self.db_location, 'r') as og, open(
+            os.path.join(path, 'db.json') if path else 'db.json', 'w'
+        ) as new:
+            data = json.load(og)
+            json.dump(data, new, indent=2)
+
+        print(
+            f"✅ Database exported to {os.path.join(path if path else os.getcwd(), 'db.json')}!"
+        )
+
     def clear_notes(self):
         try:
             ask = ''
@@ -171,13 +217,16 @@ def run_note(
     new_key: str = None,
     clipboard: bool = False,
     search: str = None,
+    path: str = None,
     many: int = None,
     sort: bool = False,
     force_strict: bool = False,
     full_key: bool = False,
 ):
-
-    note = Note(init=True if command == 'init' else False)
+    note = Note(
+        init=True if command == 'init' else False,
+        imported=True if command == 'import' else False,
+    )
 
     if command == 'loc':
         print(f'📋 Database located at {note.get_db_location()}')
@@ -207,5 +256,9 @@ def run_note(
         note.edit_note(key, new_key, value, clipboard)
     elif command == 'list':
         note.list_notes(search, many, sort, force_strict, full_key)
+    elif command == 'import':
+        note.import_db(path)  # type: ignore
+    elif command == 'export':
+        note.export_db(path)  # type: ignore
     elif command == 'clear':
         note.clear_notes()

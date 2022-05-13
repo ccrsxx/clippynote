@@ -6,7 +6,7 @@ from clippynote import note
 def parse_args():
     # initialize the main parser
     notepy_parser = argparse.ArgumentParser(
-        prog='notepy',
+        prog='note',
         description='A simple CLI for taking notes',
         allow_abbrev=False,
     )
@@ -41,7 +41,7 @@ def parse_args():
     remove_parser = sub_parser.add_parser('remove', help='remove a note')
     remove_parser.add_argument('key', action='store', type=str, help='note key')
 
-    # parseer for 'edit' command
+    # subparser for 'edit' command
     edit_parser = sub_parser.add_parser('edit', help='edit a note')
     edit_parser.add_argument('key', action='store', type=str, help='note key')
     edit_parser.add_argument(
@@ -100,6 +100,26 @@ def parse_args():
         '--full-key',
         action='store_true',
         help='show max length of key',
+    )
+
+    # subparser for 'import' command
+    import_parser = sub_parser.add_parser('import', help='import notes from a file')
+    import_parser.add_argument(
+        'path',
+        action='store',
+        type=str,
+        help='path to the file',
+    )
+
+    # subparser for 'export' command
+    export_parser = sub_parser.add_parser('export', help='export notes to a file')
+    export_parser.add_argument(
+        'path',
+        action='store',
+        type=str,
+        help='path to the file',
+        nargs='?',
+        default=None,
     )
 
     # subparser for 'clear' command
