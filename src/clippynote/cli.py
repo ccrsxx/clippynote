@@ -1,6 +1,6 @@
 import argparse
 
-from clippynote import note
+from .note import run_note
 
 
 def parse_args():
@@ -138,4 +138,4 @@ def run_cli():
         notepy_parser.print_help()
         quit()
 
-    note.run_note(**kwargs)
+    run_note(**kwargs)
