@@ -1,10 +1,4 @@
-# A Simple CLI for Taking Notes
-
-[![PyPI Latest Release](https://img.shields.io/pypi/v/clippynote.svg)](https://pypi.org/project/clippynote)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
-## About
+# [clippynote](https://github.com/ccrsxx/clippynote) &middot; [![Upload Python Package](https://github.com/ccrsxx/clippynote/actions/workflows/python-publish.yml/badge.svg)](https://github.com/ccrsxx/clippynote/actions/workflows/python-publish.yml) [![PyPI Latest Release](https://img.shields.io/pypi/v/clippynote.svg)](https://pypi.org/project/clippynote) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 A CLI for taking notes with key value pairs that uses `.json` file to store its data. It is designed to be used in a terminal. You can use it to take notes on your projects, tasks, or anything else you want.
 
