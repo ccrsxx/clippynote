@@ -105,7 +105,10 @@ class Note:
     def list_notes(self, search, many, sort, force_strict, full_key):
         keys = []
 
+        format_string = lambda x: x.replace(' ', '').lower()
+
         for key in self.db:
+            search, key = [format_string(text) for text in (search, key)]
             if search:
                 if force_strict and key.startswith(search):
                     keys.append(key)
@@ -124,7 +127,7 @@ class Note:
         if many:
             keys = keys[:many]
 
-        spacing = lambda x, y: y - len(x)
+        format_spacing = lambda x, y: y - len(x)
         max_len = max([len(x) for x in keys])
 
         if max_len > 20:
@@ -132,7 +135,7 @@ class Note:
 
         for key in keys:
             new_key, over_space = '', False
-            key_space = spacing(key, max_len)
+            key_space = format_spacing(key, max_len)
             if key_space < 0:
                 key_space = ''
                 new_key = f'{key[:17]}...' if not full_key else key
