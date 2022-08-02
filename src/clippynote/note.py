@@ -108,11 +108,13 @@ class Note:
         format_string = lambda x: x.replace(' ', '').lower()
 
         for key in self.db:
-            search, key = [format_string(text) for text in (search, key)]
+            formatted_search, formatted_key = [
+                format_string(text) if text else '' for text in (search, key)
+            ]
             if search:
                 if force_strict and key.startswith(search):
                     keys.append(key)
-                elif not force_strict and search in key:
+                elif not force_strict and formatted_search in formatted_key:
                     keys.append(key)
             else:
                 keys.append(key)
